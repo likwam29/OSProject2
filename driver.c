@@ -46,16 +46,16 @@ int main(){
 	//Create santa
 	pthread_create(&santa,NULL,santaGuy,NULL);
 	//Create elfs
-	//pthread_create(&e1,NULL,elf,NULL);
-	//pthread_create(&e2,NULL,elf,NULL);
-	//pthread_create(&e3,NULL,elf,NULL);
-	//pthread_create(&e4,NULL,elf,NULL);
-	//pthread_create(&e5,NULL,elf,NULL);
-	//pthread_create(&e6,NULL,elf,NULL);
-	//pthread_create(&e7,NULL,elf,NULL);
-	//pthread_create(&e8,NULL,elf,NULL);
-	//pthread_create(&e9,NULL,elf,NULL);
-	//pthread_create(&e10,NULL,elf,NULL);
+	pthread_create(&e1,NULL,elf,NULL);
+	pthread_create(&e2,NULL,elf,NULL);
+	pthread_create(&e3,NULL,elf,NULL);
+	pthread_create(&e4,NULL,elf,NULL);
+	pthread_create(&e5,NULL,elf,NULL);
+	pthread_create(&e6,NULL,elf,NULL);
+	pthread_create(&e7,NULL,elf,NULL);
+	pthread_create(&e8,NULL,elf,NULL);
+	pthread_create(&e9,NULL,elf,NULL);
+	pthread_create(&e10,NULL,elf,NULL);
 	//create reindeer
 	pthread_create(&r1,NULL,reindeer,NULL);
 	pthread_create(&r2,NULL,reindeer,NULL);
@@ -92,12 +92,13 @@ void helpElves(){
 }
 
 void getHelp(){
-	printf("Elf getting help\n");
+	printf("Elf %i getting help\n", elfCounter);
 }
 
 void *elf(){
 	while(1){
-		
+		int random = rand() % (max_number + 1 - minimum_number) + minimum_number;
+		usleep(random);
 		pthread_mutex_lock(&elfHelpLock);
 		pthread_mutex_lock(&counterLock);
 		elfCounter++;
@@ -107,17 +108,15 @@ void *elf(){
 			pthread_mutex_unlock(&elfHelpLock);
 		}
 		
-		printf("elf waiting\n");
-		//while (elfCounter != 3)
-			pthread_cond_wait(&elfCond, &counterLock);
+		printf("elf %i waiting\n", elfCounter);
+		pthread_cond_wait(&elfCond, &counterLock);
 
 		getHelp();
 		
-		//pthread_mutex_lock(&counterLock);
-			elfCounter--;
-			if(elfCounter == 0){
-				pthread_mutex_unlock(&elfHelpLock);
-			}
+		elfCounter--;
+		if(elfCounter == 0){
+			pthread_mutex_unlock(&elfHelpLock);
+		}
 				
 		pthread_mutex_unlock(&counterLock);
 		
@@ -126,6 +125,8 @@ void *elf(){
 
 void *reindeer(){
 	while(1){
+		int random = rand() % (max_number + 1 - minimum_number) + minimum_number;
+		usleep(random);
 		// get counter lock
 		pthread_mutex_lock(&counterLock);
 		// increase the number of reindeer back from vacation
@@ -155,8 +156,8 @@ void *santaGuy(){
 			prepSleigh();
 			pthread_cond_broadcast(&deerCond);
 		}else{
-			pthread_cond_broadcast(&elfCond);
 			helpElves();
+			pthread_cond_broadcast(&elfCond);
 		}
 		pthread_mutex_unlock(&counterLock);
 	}
